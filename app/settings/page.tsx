@@ -4,20 +4,24 @@ import { useState, useEffect } from 'react'
 import { Navigation } from '@/components/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { IconSelector } from '@/components/icon-selector'
 import { Trash2, Plus, Edit2, Save, X } from 'lucide-react'
 
 interface WorkoutType {
   id: string
   name: string
+  icon: string
 }
 
 export default function Settings() {
   const [workoutTypes, setWorkoutTypes] = useState<WorkoutType[]>([])
   const [loading, setLoading] = useState(true)
   const [newTypeName, setNewTypeName] = useState('')
+  const [newTypeIcon, setNewTypeIcon] = useState('💪')
   const [isAdding, setIsAdding] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
+  const [editingIcon, setEditingIcon] = useState('')
 
 
   useEffect(() => {
@@ -52,13 +56,14 @@ export default function Settings() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: newTypeName.trim() }),
+        body: JSON.stringify({ name: newTypeName.trim(), icon: newTypeIcon }),
       })
 
       console.log('Response status:', response.status)
       if (response.ok) {
         console.log('Success! Refreshing list...')
         setNewTypeName('')
+        setNewTypeIcon('💪')
         setIsAdding(false)
         fetchWorkoutTypes()
       } else {
@@ -79,12 +84,13 @@ export default function Settings() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: editingName.trim() }),
+        body: JSON.stringify({ name: editingName.trim(), icon: editingIcon }),
       })
 
       if (response.ok) {
         setEditingId(null)
         setEditingName('')
+        setEditingIcon('')
         fetchWorkoutTypes()
       }
     } catch (error) {
@@ -111,16 +117,19 @@ export default function Settings() {
   const startEditing = (workoutType: WorkoutType) => {
     setEditingId(workoutType.id)
     setEditingName(workoutType.name)
+    setEditingIcon(workoutType.icon)
   }
 
   const cancelEditing = () => {
     setEditingId(null)
     setEditingName('')
+    setEditingIcon('')
   }
 
   const cancelAdding = () => {
     setIsAdding(false)
     setNewTypeName('')
+    setNewTypeIcon('💪')
   }
 
   return (
@@ -148,6 +157,10 @@ export default function Settings() {
           {isAdding && (
             <div className="border rounded-lg p-4 mb-4 bg-blue-50">
               <div className="flex items-center gap-3">
+                <IconSelector
+                  selectedIcon={newTypeIcon}
+                  onIconSelect={setNewTypeIcon}
+                />
                 <Input
                   value={newTypeName}
                   onChange={(e) => setNewTypeName(e.target.value)}
@@ -196,6 +209,10 @@ export default function Settings() {
                     <div className="flex-1 min-w-0">
                       {editingId === workoutType.id ? (
                         <div className="flex items-center gap-3">
+                          <IconSelector
+                            selectedIcon={editingIcon}
+                            onIconSelect={setEditingIcon}
+                          />
                           <Input
                             value={editingName}
                             onChange={(e) => setEditingName(e.target.value)}
@@ -223,7 +240,7 @@ export default function Settings() {
                       ) : (
                         <div className="flex items-center gap-3">
                           <span className="font-medium text-gray-900 text-base">
-                            💪 {workoutType.name}
+                            {workoutType.icon} {workoutType.name}
                           </span>
                         </div>
                       )}

@@ -24,17 +24,18 @@ export async function POST(request: NextRequest) {
     
     const body = await request.json()
     console.log('Request body:', body)
-    const { name } = body
+    const { name, icon = '💪' } = body
 
     if (!name || !name.trim()) {
       console.log('Name validation failed:', name)
       return NextResponse.json({ error: 'Name is required' }, { status: 400 })
     }
 
-    console.log('Creating workout type with name:', name.trim())
+    console.log('Creating workout type with:', { name: name.trim(), icon })
     const workoutType = await prisma.workoutType.create({
       data: {
         name: name.trim(),
+        icon: icon,
       },
     })
 

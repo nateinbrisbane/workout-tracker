@@ -36,7 +36,7 @@ export function WorkoutForm({ onWorkoutAdded }: WorkoutFormProps) {
         const workoutTypes = await response.json()
         const options = workoutTypes.map((type: any) => ({
           value: type.name,
-          label: `💪 ${type.name}`,
+          label: `${type.icon || '💪'} ${type.name}`,
         }))
         setExerciseOptions(options)
       }

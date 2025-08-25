@@ -7,17 +7,24 @@ export async function PUT(
 ) {
   try {
     const body = await request.json()
-    const { name } = body
+    const { name, icon } = body
 
     if (!name || !name.trim()) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 })
     }
 
+    const updateData: any = {
+      name: name.trim(),
+    }
+    
+    // Only update icon if provided
+    if (icon !== undefined) {
+      updateData.icon = icon
+    }
+
     const workoutType = await prisma.workoutType.update({
       where: { id: params.id },
-      data: {
-        name: name.trim(),
-      },
+      data: updateData,
     })
 
     return NextResponse.json(workoutType)

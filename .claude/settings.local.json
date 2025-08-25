@@ -16,7 +16,11 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx prisma db push)",
-      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx prisma/seed.ts)"
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx prisma/seed.ts)",
+      "Bash(curl:*)",
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx debug-db.ts)",
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx test-fix.ts)",
+      "Bash(del debug-db.ts test-fix.ts)"
     ],
     "deny": [],
     "ask": []
