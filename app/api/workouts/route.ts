@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
       end: endOfTargetDay.toISOString()
     })
 
+    // First get all workouts for the date
     const workouts = await prisma.workout.findMany({
       where: {
         date: {
@@ -36,8 +37,18 @@ export async function GET(request: NextRequest) {
       },
     })
 
+    // Then get all workout types to map icons
+    const workoutTypes = await prisma.workoutType.findMany()
+    const typeIconMap = new Map(workoutTypes.map(type => [type.name, type.icon]))
+
+    // Add icons to workout data
+    const workoutsWithIcons = workouts.map(workout => ({
+      ...workout,
+      icon: typeIconMap.get(workout.exercise) || '💪'
+    }))
+
     console.log(`Found ${workouts.length} workouts for ${date}`)
-    return NextResponse.json(workouts)
+    return NextResponse.json(workoutsWithIcons)
   } catch (error: any) {
     console.error('Error fetching workouts:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

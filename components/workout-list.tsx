@@ -10,6 +10,7 @@ interface Workout {
   weight: number
   reps: number
   date: string
+  icon?: string
 }
 
 interface WorkoutListProps {
@@ -52,7 +53,7 @@ export function WorkoutList({ workouts, onWorkoutDeleted }: WorkoutListProps) {
                   Set {index + 1}
                 </span>
                 <span className="font-semibold text-gray-900 text-base truncate">
-                  {workout.exercise}
+                  {workout.icon || '💪'} {workout.exercise}
                 </span>
               </div>
               <div className="flex items-center gap-4 mt-2">
