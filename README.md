@@ -1,15 +1,15 @@
-# Workout Tracker
+# 💪 Workout Tracker
 
-A simple, local workout tracking application built with Next.js, React, and TypeScript.
+A simple workout tracking application built with Next.js, React, and TypeScript. Track your exercises, manage workout types, and view your progress!
 
 ## Features
 
-- 🏋️ **Workout Tracking**: Log weights and cardio workouts with detailed exercise information
-- 📊 **Progress Analytics**: View trends and progress over time with interactive charts
-- 📱 **Responsive Design**: Works seamlessly on desktop and mobile devices
-- 📅 **Date Navigation**: Track workouts for any day (today, yesterday, tomorrow, etc.)
-- 📈 **Trend Charts**: Visual progress tracking with customizable date ranges
-- 🗃️ **Local Storage**: All data stored locally in SQLite database
+- 🏋️ **Simple Workout Logging**: Add sets with exercise, weight (kg), and reps
+- ⚙️ **Custom Exercise Types**: Manage your own exercise library in Settings
+- 📱 **Mobile-Friendly**: Optimized for iPhone and Android
+- 📊 **Today's Focus**: Track today's workout with date display
+- 🗂️ **Workout History**: View all your previous workout sessions
+- 🔄 **Dynamic Dropdowns**: Exercise list updates automatically from your settings
 
 ## Tech Stack
 
