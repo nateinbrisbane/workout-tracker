@@ -9,8 +9,10 @@ import { format } from 'date-fns'
 export default function Home() {
   const [workouts, setWorkouts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [currentDate, setCurrentDate] = useState('')
 
   useEffect(() => {
+    setCurrentDate(format(new Date(), 'EEEE, MMMM d, yyyy'))
     fetchWorkouts()
   }, [])
 
@@ -48,7 +50,7 @@ export default function Home() {
               💪 Today's Workout
             </h1>
             <p className="text-gray-500 mt-1">
-              {format(new Date(), 'EEEE, MMMM d, yyyy')}
+              {currentDate}
             </p>
           </div>
           
