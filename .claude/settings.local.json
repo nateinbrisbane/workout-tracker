@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npm run dev:*)",
+      "Bash(del /q node_modules\\.prisma\\client\\*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npx next dev:*)",
+      "Bash(npm run build:*)",
+      "Bash(del /q node_modules.prismaclient*)",
+      "Bash(npx tsx:*)",
+      "Bash(npm install:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

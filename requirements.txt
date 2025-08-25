@@ -1,0 +1,15 @@
+
+I want to make a web-based workout tracking app to keep track of my gym workouts.
+I want the app very easy to use, minimum navigation, simple and clean user interface,
+ 
+I want to have one page where users can see/edit a list of all workouts recorded (editable) or add a new workout, all workouts on this page should belong to a day, today, yesterday, tomorrow etc
+Name of the workout, weights, reps, for weights training workout, datetime of the workout default to now
+Name of the workout, distance, time taken, datetime of the workout default to now
+I want to have a page where all the days I recorded workout will be displayed.
+I want a page to display trend graph for each workout time over time, can be filtered based on date range.  For example, lats pull down, weights (kg or lbs), for running workout, distance ran
+I want to allow users to uploading maximum one photo per workout
+ 
+I want to have new register registration, login page, I don't want to maintain user authentication information. I want the registration and logon process using third party, such as Facebook, Google, LinkedIn, X.com etc
+ 
+I want the app to be deployed in a cloud environment (Azure, Google, AWS, or any new things these days). I want minimum cost on hosting
+I want to integrate with Stripe for payment processing. I want to charge $9.99 AUD a month, but annual billing only.
