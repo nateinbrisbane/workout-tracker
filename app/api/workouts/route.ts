@@ -33,9 +33,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('POST /api/workouts called')
+    
     const body = await request.json()
+    console.log('Request body:', body)
     const { exercise, weight, reps } = body
 
+    console.log('Creating workout with:', { exercise, weight, reps })
+    
     const workout = await prisma.workout.create({
       data: {
         exercise,
@@ -45,9 +50,18 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    console.log('Workout created successfully:', workout)
     return NextResponse.json(workout, { status: 201 })
   } catch (error: any) {
     console.error('Error creating workout:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error details:', {
+      message: error?.message,
+      code: error?.code,
+      meta: error?.meta
+    })
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      details: error?.message || 'Unknown error'
+    }, { status: 500 })
   }
 }

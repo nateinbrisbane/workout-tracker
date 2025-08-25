@@ -75,8 +75,10 @@ export function WorkoutForm({ onWorkoutAdded }: WorkoutFormProps) {
   const selectedExercise = watch('exercise')
 
   const onSubmit = async (data: WorkoutFormData) => {
+    console.log('Form submitted with data:', data)
     setIsSubmitting(true)
     try {
+      console.log('Sending POST to /api/workouts')
       const response = await fetch('/api/workouts', {
         method: 'POST',
         headers: {
@@ -85,9 +87,14 @@ export function WorkoutForm({ onWorkoutAdded }: WorkoutFormProps) {
         body: JSON.stringify(data),
       })
 
+      console.log('Response status:', response.status)
       if (response.ok) {
+        console.log('Success! Resetting form and refreshing list')
         reset()
         onWorkoutAdded()
+      } else {
+        const errorData = await response.json()
+        console.error('Error response:', errorData)
       }
     } catch (error) {
       console.error('Error creating workout:', error)
