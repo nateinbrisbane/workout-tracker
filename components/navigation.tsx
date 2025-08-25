@@ -28,7 +28,7 @@ export function Navigation() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="text-lg sm:text-xl font-bold text-gray-900">
-              💪 Workout Tracker
+              💪 Lil Tracker
             </Link>
           </div>
           
