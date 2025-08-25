@@ -36,7 +36,7 @@ export async function GET() {
     }))
 
     return NextResponse.json(workoutDays)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching workout history:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

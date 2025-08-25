@@ -10,7 +10,7 @@ export async function GET() {
     })
 
     return NextResponse.json(workoutTypes)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching workout types:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
@@ -32,9 +32,9 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(workoutType, { status: 201 })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating workout type:', error)
-    if (error.code === 'P2002') {
+    if (error?.code === 'P2002') {
       return NextResponse.json({ error: 'Workout type already exists' }, { status: 409 })
     }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

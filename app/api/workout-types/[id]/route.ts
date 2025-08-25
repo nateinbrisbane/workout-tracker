@@ -21,12 +21,12 @@ export async function PUT(
     })
 
     return NextResponse.json(workoutType)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating workout type:', error)
-    if (error.code === 'P2002') {
+    if (error?.code === 'P2002') {
       return NextResponse.json({ error: 'Workout type already exists' }, { status: 409 })
     }
-    if (error.code === 'P2025') {
+    if (error?.code === 'P2025') {
       return NextResponse.json({ error: 'Workout type not found' }, { status: 404 })
     }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -43,9 +43,9 @@ export async function DELETE(
     })
 
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error deleting workout type:', error)
-    if (error.code === 'P2025') {
+    if (error?.code === 'P2025') {
       return NextResponse.json({ error: 'Workout type not found' }, { status: 404 })
     }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

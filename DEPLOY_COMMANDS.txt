@@ -1,0 +1,7 @@
+// After creating your GitHub repository, run these commands:
+// (Replace YOUR_USERNAME with your actual GitHub username)
+
+cd "C:\Users\me\OneDrive\Desktop\Workout Tracker"
+git remote add origin https://github.com/YOUR_USERNAME/workout-tracker.git
+git branch -M main
+git push -u origin main

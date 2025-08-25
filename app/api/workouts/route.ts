@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     })
 
     return NextResponse.json(workouts)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching workouts:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(workout, { status: 201 })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating workout:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
