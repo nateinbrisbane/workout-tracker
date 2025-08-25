@@ -38,9 +38,14 @@ export default function Settings() {
   }
 
   const addWorkoutType = async () => {
-    if (!newTypeName.trim()) return
+    console.log('Save button clicked, newTypeName:', newTypeName)
+    if (!newTypeName.trim()) {
+      console.log('Empty name, returning')
+      return
+    }
 
     try {
+      console.log('Sending request to /api/workout-types')
       const response = await fetch('/api/workout-types', {
         method: 'POST',
         headers: {
@@ -49,10 +54,15 @@ export default function Settings() {
         body: JSON.stringify({ name: newTypeName.trim() }),
       })
 
+      console.log('Response status:', response.status)
       if (response.ok) {
+        console.log('Success! Refreshing list...')
         setNewTypeName('')
         setIsAdding(false)
         fetchWorkoutTypes()
+      } else {
+        const errorData = await response.json()
+        console.error('Error response:', errorData)
       }
     } catch (error) {
       console.error('Error adding workout type:', error)
