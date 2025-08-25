@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { format } from 'date-fns'
 
 export async function GET() {
   try {
@@ -10,13 +9,15 @@ export async function GET() {
       },
     })
 
-    // Group workouts by date
+    // Group workouts by UTC date, but keep the actual date for timezone handling
     const workoutsByDate = workouts.reduce((acc, workout) => {
-      const dateKey = format(new Date(workout.date), 'yyyy-MM-dd')
+      // Use UTC date for grouping to maintain consistency
+      const utcDate = new Date(workout.date)
+      const dateKey = utcDate.toISOString().split('T')[0] // YYYY-MM-DD in UTC
       
       if (!acc[dateKey]) {
         acc[dateKey] = {
-          date: dateKey,
+          date: workout.date, // Keep the actual UTC datetime for frontend timezone conversion
           workouts: [],
           exercises: new Set(),
         }
@@ -30,7 +31,7 @@ export async function GET() {
 
     // Transform to the expected format
     const workoutDays = Object.values(workoutsByDate).map((day: any) => ({
-      date: day.date,
+      date: day.date, // This is now a full UTC datetime
       workoutCount: day.workouts.length,
       exercises: Array.from(day.exercises),
     }))
