@@ -2,6 +2,8 @@
 
 A simple workout tracking application built with Next.js, React, and TypeScript. Track your exercises, manage workout types, and view your progress!
 
+🚀 **Live App**: Track your workouts online!
+
 ## Features
 
 - 🏋️ **Simple Workout Logging**: Add sets with exercise, weight (kg), and reps
