@@ -18,8 +18,9 @@ export default function Home() {
 
   const fetchWorkouts = async () => {
     try {
-      const today = format(new Date(), 'yyyy-MM-dd')
-      console.log('Fetching workouts for date:', today)
+      const now = new Date()
+      const today = now.toISOString().split('T')[0]
+      console.log('Fetching workouts for UTC date:', today)
       const response = await fetch(`/api/workouts?date=${today}`)
       console.log('Fetch response status:', response.status)
       if (response.ok) {
