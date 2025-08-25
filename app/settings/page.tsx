@@ -19,7 +19,6 @@ export default function Settings() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
 
-  console.log('Settings component loaded, isAdding:', isAdding, 'newTypeName:', newTypeName)
 
   useEffect(() => {
     fetchWorkoutTypes()
@@ -136,10 +135,7 @@ export default function Settings() {
             </div>
             {!isAdding && (
               <Button
-                onClick={() => {
-                  console.log('Add Exercise button clicked')
-                  setIsAdding(true)
-                }}
+                onClick={() => setIsAdding(true)}
                 className="flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" />
@@ -161,10 +157,7 @@ export default function Settings() {
                   autoFocus
                 />
                 <Button
-                  onClick={() => {
-                    console.log('Button clicked! newTypeName:', newTypeName)
-                    addWorkoutType()
-                  }}
+                  onClick={addWorkoutType}
                   disabled={!newTypeName.trim()}
                   size="sm"
                   className="h-11 px-4"
