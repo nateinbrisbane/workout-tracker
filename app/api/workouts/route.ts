@@ -11,12 +11,24 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 })
     }
 
-    const targetDate = new Date(date)
+    // Parse the date string and create UTC date boundaries
+    const targetDate = new Date(date + 'T00:00:00.000Z')
+    const startOfTargetDay = new Date(targetDate)
+    const endOfTargetDay = new Date(targetDate)
+    endOfTargetDay.setUTCHours(23, 59, 59, 999)
+
+    console.log('Date filtering:', {
+      input: date,
+      targetDate: targetDate.toISOString(),
+      start: startOfTargetDay.toISOString(),
+      end: endOfTargetDay.toISOString()
+    })
+
     const workouts = await prisma.workout.findMany({
       where: {
         date: {
-          gte: startOfDay(targetDate),
-          lte: endOfDay(targetDate),
+          gte: startOfTargetDay,
+          lte: endOfTargetDay,
         },
       },
       orderBy: {
@@ -24,6 +36,7 @@ export async function GET(request: NextRequest) {
       },
     })
 
+    console.log(`Found ${workouts.length} workouts for ${date}`)
     return NextResponse.json(workouts)
   } catch (error: any) {
     console.error('Error fetching workouts:', error)
