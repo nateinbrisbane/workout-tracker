@@ -19,10 +19,15 @@ export default function Home() {
   const fetchWorkouts = async () => {
     try {
       const today = format(new Date(), 'yyyy-MM-dd')
+      console.log('Fetching workouts for date:', today)
       const response = await fetch(`/api/workouts?date=${today}`)
+      console.log('Fetch response status:', response.status)
       if (response.ok) {
         const data = await response.json()
+        console.log('Fetched workouts data:', data)
         setWorkouts(data)
+      } else {
+        console.error('Failed to fetch workouts:', response.status)
       }
     } catch (error) {
       console.error('Error fetching workouts:', error)
@@ -32,6 +37,7 @@ export default function Home() {
   }
 
   const handleWorkoutAdded = () => {
+    console.log('handleWorkoutAdded called - refreshing workout list')
     fetchWorkouts()
   }
 
