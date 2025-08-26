@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getLocalDateFromUTC } from '@/lib/date-utils'
 
 export async function GET() {
   try {
@@ -9,15 +10,11 @@ export async function GET() {
       },
     })
 
-    // Group workouts by UTC date - this must match how we query in /api/workouts
+    // Group workouts by LOCAL date - this must match how we query in /api/workouts
     const workoutsByDate = workouts.reduce((acc, workout) => {
-      // Extract the UTC date part from the stored timestamp
-      // This ensures consistency with how we query workouts by date
-      const workoutDate = new Date(workout.date)
-      const year = workoutDate.getUTCFullYear()
-      const month = String(workoutDate.getUTCMonth() + 1).padStart(2, '0')
-      const day = String(workoutDate.getUTCDate()).padStart(2, '0')
-      const dateKey = `${year}-${month}-${day}` // YYYY-MM-DD in UTC
+      // Extract the LOCAL date from the stored timestamp
+      // This ensures consistency with how users view dates
+      const dateKey = getLocalDateFromUTC(workout.date) // YYYY-MM-DD in local timezone
       
       if (!acc[dateKey]) {
         acc[dateKey] = {

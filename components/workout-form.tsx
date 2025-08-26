@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Select } from './ui/select'
+import { getLocalDateString } from '@/lib/date-utils'
 
 const workoutSchema = z.object({
   exercise: z.string().min(1, 'Exercise is required'),
@@ -79,8 +80,8 @@ export function WorkoutForm({ onWorkoutAdded, selectedDate }: WorkoutFormProps) 
     console.log('Form submitted with data:', data)
     setIsSubmitting(true)
     try {
-      // Use selected date from props, or fall back to current date
-      const workoutDate = selectedDate || new Date().toISOString().split('T')[0]
+      // Use selected date from props, or fall back to current LOCAL date
+      const workoutDate = selectedDate || getLocalDateString()
       
       console.log('Sending POST to /api/workouts with date:', workoutDate)
       const response = await fetch('/api/workouts', {

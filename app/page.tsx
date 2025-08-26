@@ -6,6 +6,7 @@ import { WorkoutForm } from '@/components/workout-form'
 import { WorkoutList } from '@/components/workout-list'
 import { Navigation } from '@/components/navigation'
 import { format, isValid } from 'date-fns'
+import { getLocalDateString } from '@/lib/date-utils'
 
 function WorkoutPage() {
   const searchParams = useSearchParams()
@@ -16,9 +17,9 @@ function WorkoutPage() {
   const [isToday, setIsToday] = useState(true)
 
   useEffect(() => {
-    // Get date from URL parameter, or use today's date
+    // Get date from URL parameter, or use today's LOCAL date
     const dateParam = searchParams?.get('date') || null
-    const today = new Date().toISOString().split('T')[0]
+    const today = getLocalDateString() // This gets the LOCAL date, not UTC
     
     let targetDate = dateParam || today
     let targetDateObj: Date
@@ -53,7 +54,7 @@ function WorkoutPage() {
 
   const fetchWorkouts = async (date?: string) => {
     try {
-      const targetDate = date || selectedDate || new Date().toISOString().split('T')[0]
+      const targetDate = date || selectedDate || getLocalDateString()
       console.log('Fetching workouts for UTC date:', targetDate)
       const response = await fetch(`/api/workouts?date=${targetDate}`)
       console.log('Fetch response status:', response.status)

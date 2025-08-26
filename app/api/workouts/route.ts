@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { startOfDay, endOfDay } from 'date-fns'
+import { getUTCDayBounds } from '@/lib/date-utils'
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,15 +11,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 })
     }
 
-    // Parse the date string and create UTC date boundaries
-    const targetDate = new Date(date + 'T00:00:00.000Z')
-    const startOfTargetDay = new Date(targetDate)
-    const endOfTargetDay = new Date(targetDate)
-    endOfTargetDay.setUTCHours(23, 59, 59, 999)
+    // Get UTC boundaries for the LOCAL date
+    // This handles timezone conversion properly
+    const { start: startOfTargetDay, end: endOfTargetDay } = getUTCDayBounds(date)
 
     console.log('Date filtering:', {
       input: date,
-      targetDate: targetDate.toISOString(),
+      localDate: date,
       start: startOfTargetDay.toISOString(),
       end: endOfTargetDay.toISOString()
     })
@@ -63,14 +61,17 @@ export async function POST(request: NextRequest) {
     console.log('Request body:', body)
     const { exercise, weight, reps, date } = body
 
-    // Create a proper UTC date for the workout
+    // Create a proper date for the workout
     let workoutDate: Date
     if (date) {
-      // If a date is provided (YYYY-MM-DD), create a UTC timestamp for that date
-      workoutDate = new Date(date + 'T00:00:00.000Z')
-      // Add current time of day in UTC to make it more precise
+      // Date is in local format (YYYY-MM-DD)
+      // Create a timestamp for the current moment on that local date
+      const [year, month, day] = date.split('-').map(Number)
+      workoutDate = new Date(year, month - 1, day)
+      
+      // Set to current time while preserving the date
       const now = new Date()
-      workoutDate.setUTCHours(now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds())
+      workoutDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds())
     } else {
       // Fallback to current timestamp if no date provided
       workoutDate = new Date()
