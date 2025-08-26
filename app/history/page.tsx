@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Navigation } from '@/components/navigation'
 import { format } from 'date-fns'
+import { getLocalDateString } from '@/lib/date-utils'
 import Link from 'next/link'
 
 interface WorkoutDay {
@@ -35,9 +36,39 @@ export default function History() {
         cache: 'no-store'
       })
       if (response.ok) {
-        const data = await response.json()
-        console.log('Fetched workout history:', data)
-        setWorkoutDays(data)
+        const rawWorkouts = await response.json()
+        console.log('Fetched raw workouts:', rawWorkouts)
+        
+        // Group workouts by LOCAL date on the client side
+        const workoutsByDate = rawWorkouts.reduce((acc: any, workout: any) => {
+          // Get local date from the workout timestamp
+          const workoutDate = new Date(workout.date)
+          const localDateKey = getLocalDateString(workoutDate)
+          
+          if (!acc[localDateKey]) {
+            acc[localDateKey] = {
+              workouts: [],
+              exercises: new Set(),
+            }
+          }
+          
+          acc[localDateKey].workouts.push(workout)
+          acc[localDateKey].exercises.add(workout.exercise)
+          
+          return acc
+        }, {})
+        
+        // Transform to the expected format and sort by date descending
+        const workoutDays = Object.entries(workoutsByDate)
+          .map(([dateKey, day]: [string, any]) => ({
+            date: dateKey, // YYYY-MM-DD format for URL compatibility
+            workoutCount: day.workouts.length,
+            exercises: Array.from(day.exercises) as string[],
+          }))
+          .sort((a, b) => b.date.localeCompare(a.date))
+        
+        console.log('Processed workout days:', workoutDays)
+        setWorkoutDays(workoutDays)
       }
     } catch (error) {
       console.error('Error fetching workout history:', error)
