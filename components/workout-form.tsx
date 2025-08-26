@@ -78,13 +78,20 @@ export function WorkoutForm({ onWorkoutAdded }: WorkoutFormProps) {
     console.log('Form submitted with data:', data)
     setIsSubmitting(true)
     try {
-      console.log('Sending POST to /api/workouts')
+      // Get current local date to ensure workout is associated with the user's current day
+      const now = new Date()
+      const localDate = now.toISOString().split('T')[0] // YYYY-MM-DD in UTC
+      
+      console.log('Sending POST to /api/workouts with date:', localDate)
       const response = await fetch('/api/workouts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          date: localDate,
+        }),
       })
 
       console.log('Response status:', response.status)

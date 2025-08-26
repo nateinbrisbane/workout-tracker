@@ -61,16 +61,29 @@ export async function POST(request: NextRequest) {
     
     const body = await request.json()
     console.log('Request body:', body)
-    const { exercise, weight, reps } = body
+    const { exercise, weight, reps, date } = body
 
-    console.log('Creating workout with:', { exercise, weight, reps })
+    // Create a proper UTC date for the workout
+    let workoutDate: Date
+    if (date) {
+      // If a date is provided (YYYY-MM-DD), create a UTC timestamp for that date
+      workoutDate = new Date(date + 'T00:00:00.000Z')
+      // Add current time of day in UTC to make it more precise
+      const now = new Date()
+      workoutDate.setUTCHours(now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds())
+    } else {
+      // Fallback to current timestamp if no date provided
+      workoutDate = new Date()
+    }
+
+    console.log('Creating workout with:', { exercise, weight, reps, date: workoutDate.toISOString() })
     
     const workout = await prisma.workout.create({
       data: {
         exercise,
         weight,
         reps,
-        date: new Date(),
+        date: workoutDate,
       },
     })
 
