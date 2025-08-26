@@ -66,7 +66,12 @@ export default function History() {
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="flex-1">
                       <h3 className="font-semibold text-gray-900 text-base sm:text-lg">
-                        {format(new Date(day.date), 'EEEE, MMMM d, yyyy')}
+                        {(() => {
+                          // Parse the UTC date and display in local timezone
+                          const [year, month, date] = day.date.split('-').map(Number)
+                          const localDate = new Date(year, month - 1, date)
+                          return format(localDate, 'EEEE, MMMM d, yyyy')
+                        })()}
                       </h3>
                       <p className="text-sm sm:text-base text-gray-600 mt-1">
                         {day.workoutCount} set{day.workoutCount !== 1 ? 's' : ''} • {day.exercises.join(', ')}
