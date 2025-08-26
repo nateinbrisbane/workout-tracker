@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { WorkoutForm } from '@/components/workout-form'
 import { WorkoutList } from '@/components/workout-list'
 import { Navigation } from '@/components/navigation'
 import { format } from 'date-fns'
 
-export default function Home() {
+function WorkoutPage() {
   const searchParams = useSearchParams()
   const [workouts, setWorkouts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -94,5 +94,22 @@ export default function Home() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
+          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+            <div className="text-center py-8 text-gray-500">Loading...</div>
+          </div>
+        </div>
+      </div>
+    }>
+      <WorkoutPage />
+    </Suspense>
   )
 }
