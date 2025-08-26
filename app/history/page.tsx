@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Navigation } from '@/components/navigation'
 import { format } from 'date-fns'
 import Link from 'next/link'
@@ -17,13 +18,25 @@ export default function History() {
 
   useEffect(() => {
     fetchWorkoutHistory()
+    
+    // Refresh when the page gains focus (e.g., coming back from workout page)
+    const handleFocus = () => {
+      fetchWorkoutHistory()
+    }
+    
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
   }, [])
 
   const fetchWorkoutHistory = async () => {
     try {
-      const response = await fetch('/api/workouts/history')
+      // Add cache-busting to ensure fresh data
+      const response = await fetch('/api/workouts/history', {
+        cache: 'no-store'
+      })
       if (response.ok) {
         const data = await response.json()
+        console.log('Fetched workout history:', data)
         setWorkoutDays(data)
       }
     } catch (error) {

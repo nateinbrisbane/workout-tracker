@@ -9,15 +9,18 @@ export async function GET() {
       },
     })
 
-    // Group workouts by UTC date, but keep the actual date for timezone handling
+    // Group workouts by UTC date - this must match how we query in /api/workouts
     const workoutsByDate = workouts.reduce((acc, workout) => {
-      // Use UTC date for grouping to maintain consistency
-      const utcDate = new Date(workout.date)
-      const dateKey = utcDate.toISOString().split('T')[0] // YYYY-MM-DD in UTC
+      // Extract the UTC date part from the stored timestamp
+      // This ensures consistency with how we query workouts by date
+      const workoutDate = new Date(workout.date)
+      const year = workoutDate.getUTCFullYear()
+      const month = String(workoutDate.getUTCMonth() + 1).padStart(2, '0')
+      const day = String(workoutDate.getUTCDate()).padStart(2, '0')
+      const dateKey = `${year}-${month}-${day}` // YYYY-MM-DD in UTC
       
       if (!acc[dateKey]) {
         acc[dateKey] = {
-          date: workout.date, // Keep the actual UTC datetime for frontend timezone conversion
           workouts: [],
           exercises: new Set(),
         }
@@ -29,12 +32,14 @@ export async function GET() {
       return acc
     }, {} as Record<string, any>)
 
-    // Transform to the expected format
-    const workoutDays = Object.entries(workoutsByDate).map(([dateKey, day]: [string, any]) => ({
-      date: dateKey, // Use the YYYY-MM-DD key for URL compatibility
-      workoutCount: day.workouts.length,
-      exercises: Array.from(day.exercises),
-    }))
+    // Transform to the expected format and sort by date descending
+    const workoutDays = Object.entries(workoutsByDate)
+      .map(([dateKey, day]: [string, any]) => ({
+        date: dateKey, // YYYY-MM-DD format for URL compatibility
+        workoutCount: day.workouts.length,
+        exercises: Array.from(day.exercises),
+      }))
+      .sort((a, b) => b.date.localeCompare(a.date)) // Sort by date descending
 
     return NextResponse.json(workoutDays)
   } catch (error: any) {
