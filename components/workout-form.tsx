@@ -18,9 +18,10 @@ type WorkoutFormData = z.infer<typeof workoutSchema>
 
 interface WorkoutFormProps {
   onWorkoutAdded: () => void
+  selectedDate?: string
 }
 
-export function WorkoutForm({ onWorkoutAdded }: WorkoutFormProps) {
+export function WorkoutForm({ onWorkoutAdded, selectedDate }: WorkoutFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [exerciseOptions, setExerciseOptions] = useState<{ value: string; label: string }[]>([])
   const [loadingExercises, setLoadingExercises] = useState(true)
@@ -78,11 +79,10 @@ export function WorkoutForm({ onWorkoutAdded }: WorkoutFormProps) {
     console.log('Form submitted with data:', data)
     setIsSubmitting(true)
     try {
-      // Get current local date to ensure workout is associated with the user's current day
-      const now = new Date()
-      const localDate = now.toISOString().split('T')[0] // YYYY-MM-DD in UTC
+      // Use selected date from props, or fall back to current date
+      const workoutDate = selectedDate || new Date().toISOString().split('T')[0]
       
-      console.log('Sending POST to /api/workouts with date:', localDate)
+      console.log('Sending POST to /api/workouts with date:', workoutDate)
       const response = await fetch('/api/workouts', {
         method: 'POST',
         headers: {
@@ -90,7 +90,7 @@ export function WorkoutForm({ onWorkoutAdded }: WorkoutFormProps) {
         },
         body: JSON.stringify({
           ...data,
-          date: localDate,
+          date: workoutDate,
         }),
       })
 
