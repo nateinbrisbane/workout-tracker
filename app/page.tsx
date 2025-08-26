@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { WorkoutForm } from '@/components/workout-form'
 import { WorkoutList } from '@/components/workout-list'
 import { Navigation } from '@/components/navigation'
-import { format } from 'date-fns'
+import { format, isValid } from 'date-fns'
 
 function WorkoutPage() {
   const searchParams = useSearchParams()
@@ -17,11 +17,32 @@ function WorkoutPage() {
 
   useEffect(() => {
     // Get date from URL parameter, or use today's date
-    const dateParam = searchParams.get('date')
+    const dateParam = searchParams?.get('date') || null
     const today = new Date().toISOString().split('T')[0]
     
-    const targetDate = dateParam || today
-    const targetDateObj = new Date(targetDate + 'T00:00:00.000Z')
+    let targetDate = dateParam || today
+    let targetDateObj: Date
+    
+    // Validate and parse the date string
+    try {
+      // Check if it's a valid YYYY-MM-DD format
+      if (targetDate && /^\d{4}-\d{2}-\d{2}$/.test(targetDate)) {
+        targetDateObj = new Date(targetDate + 'T00:00:00.000Z')
+      } else {
+        // Invalid format, use today
+        targetDateObj = new Date()
+        targetDate = today
+      }
+      
+      if (!isValid(targetDateObj)) {
+        targetDateObj = new Date()
+        targetDate = today
+      }
+    } catch (error) {
+      console.error('Date parsing error:', error)
+      targetDateObj = new Date()
+      targetDate = today
+    }
     
     setSelectedDate(targetDate)
     setCurrentDate(format(targetDateObj, 'EEEE, MMMM d, yyyy'))

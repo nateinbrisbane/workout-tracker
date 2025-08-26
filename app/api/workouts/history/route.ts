@@ -30,8 +30,8 @@ export async function GET() {
     }, {} as Record<string, any>)
 
     // Transform to the expected format
-    const workoutDays = Object.values(workoutsByDate).map((day: any) => ({
-      date: day.date, // This is now a full UTC datetime
+    const workoutDays = Object.entries(workoutsByDate).map(([dateKey, day]: [string, any]) => ({
+      date: dateKey, // Use the YYYY-MM-DD key for URL compatibility
       workoutCount: day.workouts.length,
       exercises: Array.from(day.exercises),
     }))
