@@ -8,11 +8,14 @@ datasource db {
 }
 
 model WorkoutType {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  icon      String   @default("💪") // Emoji icon for the exercise
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  name          String   @unique
+  icon          String   @default("💪") // Emoji icon for the exercise
+  category      String   @default("weight") // "weight" or "cardio"
+  isBodyWeight  Boolean  @default(false) // For weight exercises, allow 0 weight
+  unit          String   @default("kg") // "kg" or "lbs" for weight exercises
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Workout {

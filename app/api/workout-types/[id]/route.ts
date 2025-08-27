@@ -7,7 +7,7 @@ export async function PUT(
 ) {
   try {
     const body = await request.json()
-    const { name, icon } = body
+    const { name, icon, category, isBodyWeight, unit } = body
 
     if (!name || !name.trim()) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 })
@@ -17,9 +17,18 @@ export async function PUT(
       name: name.trim(),
     }
     
-    // Only update icon if provided
+    // Only update fields if provided
     if (icon !== undefined) {
       updateData.icon = icon
+    }
+    if (category !== undefined) {
+      updateData.category = category
+    }
+    if (isBodyWeight !== undefined) {
+      updateData.isBodyWeight = isBodyWeight
+    }
+    if (unit !== undefined) {
+      updateData.unit = unit
     }
 
     const workoutType = await prisma.workoutType.update({

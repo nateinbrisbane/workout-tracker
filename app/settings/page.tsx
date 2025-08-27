@@ -11,6 +11,9 @@ interface WorkoutType {
   id: string
   name: string
   icon: string
+  category: string
+  isBodyWeight: boolean
+  unit: string
 }
 
 export default function Settings() {
@@ -18,10 +21,16 @@ export default function Settings() {
   const [loading, setLoading] = useState(true)
   const [newTypeName, setNewTypeName] = useState('')
   const [newTypeIcon, setNewTypeIcon] = useState('💪')
+  const [newTypeCategory, setNewTypeCategory] = useState('weight')
+  const [newTypeIsBodyWeight, setNewTypeIsBodyWeight] = useState(false)
+  const [newTypeUnit, setNewTypeUnit] = useState('kg')
   const [isAdding, setIsAdding] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
   const [editingIcon, setEditingIcon] = useState('')
+  const [editingCategory, setEditingCategory] = useState('weight')
+  const [editingIsBodyWeight, setEditingIsBodyWeight] = useState(false)
+  const [editingUnit, setEditingUnit] = useState('kg')
 
 
   useEffect(() => {
@@ -56,7 +65,13 @@ export default function Settings() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: newTypeName.trim(), icon: newTypeIcon }),
+        body: JSON.stringify({ 
+          name: newTypeName.trim(), 
+          icon: newTypeIcon,
+          category: newTypeCategory,
+          isBodyWeight: newTypeIsBodyWeight,
+          unit: newTypeUnit
+        }),
       })
 
       console.log('Response status:', response.status)
@@ -84,7 +99,13 @@ export default function Settings() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: editingName.trim(), icon: editingIcon }),
+        body: JSON.stringify({ 
+          name: editingName.trim(), 
+          icon: editingIcon,
+          category: editingCategory,
+          isBodyWeight: editingIsBodyWeight,
+          unit: editingUnit
+        }),
       })
 
       if (response.ok) {
@@ -118,18 +139,27 @@ export default function Settings() {
     setEditingId(workoutType.id)
     setEditingName(workoutType.name)
     setEditingIcon(workoutType.icon)
+    setEditingCategory(workoutType.category || 'weight')
+    setEditingIsBodyWeight(workoutType.isBodyWeight || false)
+    setEditingUnit(workoutType.unit || 'kg')
   }
 
   const cancelEditing = () => {
     setEditingId(null)
     setEditingName('')
     setEditingIcon('')
+    setEditingCategory('weight')
+    setEditingIsBodyWeight(false)
+    setEditingUnit('kg')
   }
 
   const cancelAdding = () => {
     setIsAdding(false)
     setNewTypeName('')
     setNewTypeIcon('💪')
+    setNewTypeCategory('weight')
+    setNewTypeIsBodyWeight(false)
+    setNewTypeUnit('kg')
   }
 
   return (
@@ -156,35 +186,80 @@ export default function Settings() {
           {/* Add new workout type */}
           {isAdding && (
             <div className="border rounded-lg p-4 mb-4 bg-blue-50">
-              <div className="flex items-center gap-3">
-                <IconSelector
-                  selectedIcon={newTypeIcon}
-                  onIconSelect={setNewTypeIcon}
-                />
-                <Input
-                  value={newTypeName}
-                  onChange={(e) => setNewTypeName(e.target.value)}
-                  placeholder="Enter exercise name (e.g., Deadlift)"
-                  className="flex-1 h-11 text-base"
-                  onKeyPress={(e) => e.key === 'Enter' && addWorkoutType()}
-                  autoFocus
-                />
-                <Button
-                  onClick={addWorkoutType}
-                  disabled={!newTypeName.trim()}
-                  size="sm"
-                  className="h-11 px-4"
-                >
-                  <Save className="h-4 w-4" />
-                </Button>
-                <Button
-                  onClick={cancelAdding}
-                  variant="outline"
-                  size="sm"
-                  className="h-11 px-4"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <IconSelector
+                    selectedIcon={newTypeIcon}
+                    onIconSelect={setNewTypeIcon}
+                  />
+                  <Input
+                    value={newTypeName}
+                    onChange={(e) => setNewTypeName(e.target.value)}
+                    placeholder="Enter exercise name (e.g., Deadlift)"
+                    className="flex-1 h-11 text-base"
+                    autoFocus
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <select
+                      value={newTypeCategory}
+                      onChange={(e) => setNewTypeCategory(e.target.value)}
+                      className="w-full h-10 px-3 border rounded-md text-sm"
+                    >
+                      <option value="weight">💪 Weight Training</option>
+                      <option value="cardio">🏃 Cardio</option>
+                    </select>
+                  </div>
+                  
+                  {newTypeCategory === 'weight' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+                        <select
+                          value={newTypeUnit}
+                          onChange={(e) => setNewTypeUnit(e.target.value)}
+                          className="w-full h-10 px-3 border rounded-md text-sm"
+                        >
+                          <option value="kg">Kilograms (kg)</option>
+                          <option value="lbs">Pounds (lbs)</option>
+                        </select>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={newTypeIsBodyWeight}
+                            onChange={(e) => setNewTypeIsBodyWeight(e.target.checked)}
+                            className="w-4 h-4 text-blue-600 border-gray-300 rounded"
+                          />
+                          <span className="text-sm font-medium text-gray-700">Bodyweight exercise</span>
+                        </label>
+                      </div>
+                    </>
+                  )}
+                </div>
+                
+                <div className="flex justify-end gap-2">
+                  <Button
+                    onClick={cancelAdding}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={addWorkoutType}
+                    disabled={!newTypeName.trim()}
+                    size="sm"
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Exercise
+                  </Button>
+                </div>
               </div>
             </div>
           )}
@@ -238,10 +313,25 @@ export default function Settings() {
                           </Button>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-3">
-                          <span className="font-medium text-gray-900 text-base">
-                            {workoutType.icon} {workoutType.name}
-                          </span>
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center gap-3">
+                            <span className="font-medium text-gray-900 text-base">
+                              {workoutType.icon} {workoutType.name}
+                            </span>
+                            <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
+                              {workoutType.category === 'cardio' ? '🏃 Cardio' : '💪 Weight'}
+                            </span>
+                            {workoutType.category === 'weight' && workoutType.isBodyWeight && (
+                              <span className="text-xs px-2 py-1 bg-blue-100 rounded-full text-blue-700">
+                                Bodyweight
+                              </span>
+                            )}
+                            {workoutType.category === 'weight' && (
+                              <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
+                                {workoutType.unit || 'kg'}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
