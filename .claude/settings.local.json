@@ -25,7 +25,9 @@
       "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx fix-dates.ts)",
       "Bash(del debug-timezone.ts fix-dates.ts)",
       "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx check-dates.ts)",
-      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx fix-local-dates.ts)"
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx fix-local-dates.ts)",
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx test-dates.ts)",
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx test-filter.ts)"
     ],
     "deny": [],
     "ask": []

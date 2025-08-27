@@ -10,30 +10,35 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 })
     }
 
-    // Simple date filtering - no UTC conversion needed
-    // Create start and end of day in local time
-    const [year, month, day] = date.split('-').map(Number)
-    const startOfDay = new Date(year, month - 1, day, 0, 0, 0, 0)
-    const endOfDay = new Date(year, month - 1, day, 23, 59, 59, 999)
-
-    console.log('Date filtering:', {
-      input: date,
-      startOfDay: startOfDay.toString(),
-      endOfDay: endOfDay.toString()
-    })
-
-    // Get all workouts for the date
-    const workouts = await prisma.workout.findMany({
-      where: {
-        date: {
-          gte: startOfDay,
-          lte: endOfDay,
-        },
-      },
+    // Get all workouts - we'll filter in memory to avoid timezone issues
+    const allWorkouts = await prisma.workout.findMany({
       orderBy: {
         createdAt: 'asc',
       },
     })
+    
+    console.log(`Date filtering for: ${date}, found ${allWorkouts.length} total workouts`)
+    
+    // Filter workouts by comparing the date portion of the ISO string
+    // This works because dates stored as "2025-08-27 05:54:09" become "2025-08-26T19:54:09.000Z" in ISO
+    // We need to add 10 hours (Australia offset) to get the correct local date
+    const workouts = allWorkouts.filter(w => {
+      // For Australian timezone (+10), we need to adjust the UTC date
+      const isoString = w.date.toISOString()
+      const utcDate = new Date(isoString)
+      
+      // Add 10 hours for Australian Eastern Standard Time
+      utcDate.setHours(utcDate.getHours() + 10)
+      
+      const year = utcDate.getUTCFullYear()
+      const month = String(utcDate.getUTCMonth() + 1).padStart(2, '0')
+      const day = String(utcDate.getUTCDate()).padStart(2, '0')
+      const localDateStr = `${year}-${month}-${day}`
+      
+      return localDateStr === date
+    })
+    
+    console.log(`Found ${workouts.length} workouts for ${date}`)
 
     // Then get all workout types to map icons
     const workoutTypes = await prisma.workoutType.findMany()
