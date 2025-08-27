@@ -12,31 +12,20 @@ export const AUTHORIZED_DOMAINS: string[] = [
 ]
 
 export function isAuthorizedUser(email: string | null | undefined): boolean {
-  console.log('Checking authorization for email:', email)
-  console.log('Authorized emails list:', AUTHORIZED_EMAILS)
-  
-  if (!email) {
-    console.log('No email provided')
-    return false
-  }
+  if (!email) return false
   
   const normalizedEmail = email.toLowerCase().trim()
-  console.log('Normalized email:', normalizedEmail)
   
   // Check if email is in the authorized list
   if (AUTHORIZED_EMAILS.includes(normalizedEmail)) {
-    console.log('Email found in authorized list')
     return true
   }
   
   // Check if email domain is authorized
   const domain = normalizedEmail.split('@')[1]
-  console.log('Checking domain:', domain)
   if (domain && AUTHORIZED_DOMAINS.includes(domain)) {
-    console.log('Domain found in authorized list')
     return true
   }
   
-  console.log('Email not authorized')
   return false
 }

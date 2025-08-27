@@ -19,16 +19,14 @@ function LoginContent() {
   }, [searchParams])
 
   const handleSignIn = async (provider: string) => {
-    console.log('Attempting to sign in with:', provider)
     setIsLoading(true)
     setError(null)
     
     try {
-      const result = await signIn(provider, { 
+      await signIn(provider, { 
         callbackUrl: '/',
         redirect: true
       })
-      console.log('Sign in result:', result)
     } catch (error) {
       console.error('Sign in error:', error)
       setError('Failed to sign in. Please try again.')
