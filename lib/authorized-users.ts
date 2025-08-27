@@ -3,7 +3,7 @@
 export const AUTHORIZED_EMAILS = [
   'me@nathanli.net', // Add your email here
   // Add more authorized emails as needed
-]
+].map(email => email.toLowerCase().trim())
 
 // You can also use domain-based authorization
 // e.g., allow all users from a specific domain
@@ -20,7 +20,7 @@ export function isAuthorizedUser(email: string | null | undefined): boolean {
     return false
   }
   
-  const normalizedEmail = email.toLowerCase()
+  const normalizedEmail = email.toLowerCase().trim()
   console.log('Normalized email:', normalizedEmail)
   
   // Check if email is in the authorized list
