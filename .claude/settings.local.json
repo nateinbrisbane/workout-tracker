@@ -31,7 +31,11 @@
       "Bash(powershell:*)",
       "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx query-workout-types.ts)",
       "Bash(del query-workout-types.ts)",
-      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx update-icons.ts)"
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx update-icons.ts)",
+      "Bash(git log:*)",
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx prisma db push --accept-data-loss)",
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx prisma/migrate-existing-data.ts)",
+      "Bash(openssl rand:*)"
     ],
     "deny": [],
     "ask": []

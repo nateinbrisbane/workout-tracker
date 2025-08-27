@@ -1,9 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
 
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Get both global workout types and user-specific ones
     const workoutTypes = await prisma.workoutType.findMany({
+      where: {
+        OR: [
+          { isGlobal: true },
+          { userId: session.user.id }
+        ]
+      },
       orderBy: {
         name: 'asc',
       },
@@ -18,6 +32,11 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     console.log('POST /api/workout-types called')
     console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL)
     console.log('DATABASE_URL preview:', process.env.DATABASE_URL?.slice(0, 20) + '...')
@@ -42,7 +61,8 @@ export async function POST(request: NextRequest) {
       icon, 
       category, 
       isBodyWeight, 
-      unit 
+      unit,
+      userId: session.user.id
     })
     const workoutType = await prisma.workoutType.create({
       data: {
@@ -51,6 +71,8 @@ export async function POST(request: NextRequest) {
         category: category,
         isBodyWeight: isBodyWeight,
         unit: unit,
+        userId: session.user.id,
+        isGlobal: false
       },
     })
 

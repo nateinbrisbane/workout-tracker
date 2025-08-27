@@ -1,11 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Check if user owns this workout type or if it's global
+    const existingType = await prisma.workoutType.findUnique({
+      where: { id: params.id },
+    })
+
+    if (!existingType) {
+      return NextResponse.json({ error: 'Workout type not found' }, { status: 404 })
+    }
+
+    // Only allow editing user's own workout types (not global ones)
+    if (existingType.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Cannot edit this workout type' }, { status: 403 })
+    }
+
     const body = await request.json()
     const { name, icon, category, isBodyWeight, unit } = body
 
@@ -54,6 +75,25 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Check if user owns this workout type
+    const existingType = await prisma.workoutType.findUnique({
+      where: { id: params.id },
+    })
+
+    if (!existingType) {
+      return NextResponse.json({ error: 'Workout type not found' }, { status: 404 })
+    }
+
+    // Only allow deleting user's own workout types (not global ones)
+    if (existingType.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Cannot delete this workout type' }, { status: 403 })
+    }
+
     await prisma.workoutType.delete({
       where: { id: params.id },
     })

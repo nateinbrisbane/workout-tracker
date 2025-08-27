@@ -3,11 +3,14 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, LogOut, User } from 'lucide-react'
+import { useSession, signOut } from 'next-auth/react'
+import { Button } from './ui/button'
 
 export function Navigation() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
+  const { data: session } = useSession()
   
   const isActive = (path: string) => {
     if (path === '/' && pathname === '/') return true
@@ -33,7 +36,7 @@ export function Navigation() {
           </div>
           
           {/* Desktop Navigation Links */}
-          <div className="hidden md:flex space-x-2 sm:space-x-4">
+          <div className="hidden md:flex items-center space-x-2 sm:space-x-4">
             {navLinks.map((link) => (
               <Link 
                 key={link.href}
@@ -47,6 +50,36 @@ export function Navigation() {
                 {link.label}
               </Link>
             ))}
+            
+            {session && (
+              <div className="flex items-center gap-3 ml-4 pl-4 border-l">
+                <div className="flex items-center gap-2">
+                  {session.user?.image ? (
+                    <img 
+                      src={session.user.image} 
+                      alt={session.user.name || 'User'}
+                      className="w-8 h-8 rounded-full"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                      <User className="w-4 h-4 text-gray-600" />
+                    </div>
+                  )}
+                  <span className="text-sm font-medium text-gray-700">
+                    {session.user?.name || session.user?.email}
+                  </span>
+                </div>
+                <Button
+                  onClick={() => signOut()}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-1"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Mobile hamburger button */}
@@ -79,6 +112,36 @@ export function Navigation() {
                   {link.label}
                 </Link>
               ))}
+              
+              {session && (
+                <div className="border-t mt-2 pt-2 px-3 space-y-2">
+                  <div className="flex items-center gap-2">
+                    {session.user?.image ? (
+                      <img 
+                        src={session.user.image} 
+                        alt={session.user.name || 'User'}
+                        className="w-8 h-8 rounded-full"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                        <User className="w-4 h-4 text-gray-600" />
+                      </div>
+                    )}
+                    <span className="text-sm font-medium text-gray-700">
+                      {session.user?.name || session.user?.email}
+                    </span>
+                  </div>
+                  <Button
+                    onClick={() => signOut()}
+                    variant="outline"
+                    size="sm"
+                    className="w-full flex items-center justify-center gap-1"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}

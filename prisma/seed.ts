@@ -4,23 +4,38 @@ const prisma = new PrismaClient()
 
 async function main() {
   const workoutTypes = [
-    'Shoulder Press',
-    'Bench Press', 
-    'Lats Pulldown',
-    'Lats Row',
-    'Bicep Curl',
-    'Shoulder Fly'
+    { name: 'Shoulder Press', icon: '🏋️', category: 'weight', unit: 'kg' },
+    { name: 'Bench Press', icon: '🏋️', category: 'weight', unit: 'kg' },
+    { name: 'Lats Pulldown', icon: '💪', category: 'weight', unit: 'kg' },
+    { name: 'Lats Row', icon: '🚣', category: 'weight', unit: 'kg' },
+    { name: 'Bicep Curl', icon: '💪', category: 'weight', unit: 'kg' },
+    { name: 'Shoulder Fly', icon: '🦅', category: 'weight', unit: 'kg' }
   ]
 
-  for (const name of workoutTypes) {
-    await prisma.workoutType.upsert({
-      where: { name },
-      update: {},
-      create: { name }
+  for (const type of workoutTypes) {
+    // Check if workout type already exists
+    const existing = await prisma.workoutType.findFirst({
+      where: { 
+        name: type.name,
+        userId: null
+      }
     })
+    
+    if (!existing) {
+      await prisma.workoutType.create({
+        data: {
+          name: type.name,
+          icon: type.icon,
+          category: type.category,
+          unit: type.unit,
+          isGlobal: true,
+          userId: null
+        }
+      })
+    }
   }
 
-  console.log('Seeded workout types')
+  console.log('Seeded global workout types')
 }
 
 main()

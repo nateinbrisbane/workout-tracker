@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { searchParams } = new URL(request.url)
     const date = searchParams.get('date')
 
@@ -10,8 +17,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 })
     }
 
-    // Get all workouts - we'll filter in memory to avoid timezone issues
+    // Get all workouts for the current user - we'll filter in memory to avoid timezone issues
     const allWorkouts = await prisma.workout.findMany({
+      where: {
+        userId: session.user.id
+      },
       orderBy: {
         createdAt: 'asc',
       },
@@ -40,8 +50,15 @@ export async function GET(request: NextRequest) {
     
     console.log(`Found ${workouts.length} workouts for ${date}`)
 
-    // Then get all workout types to map their properties
-    const workoutTypes = await prisma.workoutType.findMany()
+    // Then get all workout types (global and user-specific) to map their properties
+    const workoutTypes = await prisma.workoutType.findMany({
+      where: {
+        OR: [
+          { isGlobal: true },
+          { userId: session.user.id }
+        ]
+      }
+    })
     const typeMap = new Map(workoutTypes.map(type => [type.name, type]))
 
     // Add workout type details to workout data
@@ -66,6 +83,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     console.log('POST /api/workouts called')
     
     const body = await request.json()
@@ -95,6 +117,7 @@ export async function POST(request: NextRequest) {
         weight,
         reps,
         date: workoutDate,
+        userId: session.user.id
       },
     })
 

@@ -7,23 +7,83 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// NextAuth.js Models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String?   @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  workouts      Workout[]
+  workoutTypes  WorkoutType[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
 model WorkoutType {
   id            String   @id @default(cuid())
-  name          String   @unique
+  name          String   
   icon          String   @default("💪") // Emoji icon for the exercise
   category      String   @default("weight") // "weight" or "cardio"
   isBodyWeight  Boolean  @default(false) // For weight exercises, allow 0 weight
   unit          String   @default("kg") // "kg" or "lbs" for weight exercises
+  isGlobal      Boolean  @default(false) // If true, available to all users
+  userId        String?  // Null for global types, set for user-specific types
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  
+  @@unique([name, userId]) // Unique name per user
+  @@index([userId])
 }
 
 model Workout {
   id        String   @id @default(cuid())
   exercise  String   // Exercise name from dropdown
-  weight    Float    // Weight in kg
-  reps      Int      // Number of reps
+  weight    Float    // Weight in kg or lbs / Time for cardio
+  reps      Int      // Number of reps / Distance for cardio
   date      DateTime @default(now())
+  userId    String?  // Temporarily optional for migration
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  @@index([userId, date])
 }
