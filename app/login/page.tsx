@@ -2,17 +2,36 @@
 
 import { signIn } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 
-export default function LoginPage() {
+function LoginContent() {
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+  
+  useEffect(() => {
+    const error = searchParams.get('error')
+    if (error) {
+      setError('Authentication failed. Please try again.')
+    }
+  }, [searchParams])
 
   const handleSignIn = async (provider: string) => {
+    console.log('Attempting to sign in with:', provider)
     setIsLoading(true)
+    setError(null)
+    
     try {
-      await signIn(provider, { callbackUrl: '/' })
+      const result = await signIn(provider, { 
+        callbackUrl: '/',
+        redirect: true
+      })
+      console.log('Sign in result:', result)
     } catch (error) {
       console.error('Sign in error:', error)
+      setError('Failed to sign in. Please try again.')
       setIsLoading(false)
     }
   }
@@ -29,11 +48,18 @@ export default function LoginPage() {
           </p>
         </div>
 
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+
         <div className="space-y-4">
           <Button
             onClick={() => handleSignIn('google')}
             disabled={isLoading}
-            className="w-full h-12 text-base font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300"
+            type="button"
+            className="w-full h-12 text-base font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 transition-colors"
           >
             <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
               <path
@@ -54,7 +80,7 @@ export default function LoginPage() {
               />
               <path fill="none" d="M1 1h22v22H1z" />
             </svg>
-            Sign in with Google
+            {isLoading ? 'Signing in...' : 'Sign in with Google'}
           </Button>
 
           <div className="relative">
@@ -104,5 +130,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   )
 }
