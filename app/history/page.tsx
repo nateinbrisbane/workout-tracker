@@ -41,11 +41,13 @@ export default function History() {
         
         // Group workouts by LOCAL date on the client side
         const workoutsByDate = rawWorkouts.reduce((acc: any, workout: any) => {
-          // Get local date from the workout timestamp with timezone adjustment
-          const workoutDate = new Date(workout.date)
-          // Add 10 hours for Australian Eastern Standard Time
-          workoutDate.setHours(workoutDate.getHours() + 10)
-          const localDateKey = getLocalDateString(workoutDate)
+          // Parse the stored date as UTC and extract the date components
+          const utcDate = new Date(workout.date)
+          // Since we store dates in local time but as UTC, we need to extract the UTC components
+          const year = utcDate.getUTCFullYear()
+          const month = String(utcDate.getUTCMonth() + 1).padStart(2, '0')
+          const day = String(utcDate.getUTCDate()).padStart(2, '0')
+          const localDateKey = `${year}-${month}-${day}`
           
           if (!acc[localDateKey]) {
             acc[localDateKey] = {

@@ -31,23 +31,16 @@ export async function GET(request: NextRequest) {
     
     console.log(`User ${session.user.id}: Date filtering for: ${date}, found ${allWorkouts.length} total workouts for this user`)
     
-    // Filter workouts by comparing the date portion of the ISO string
-    // This works because dates stored as "2025-08-27 05:54:09" become "2025-08-26T19:54:09.000Z" in ISO
-    // We need to add 10 hours (Australia offset) to get the correct local date
+    // Filter workouts by comparing UTC date components directly
+    // Since we store dates at UTC midnight, we can extract date directly
     const workouts = allWorkouts.filter(w => {
-      // For Australian timezone (+10), we need to adjust the UTC date
-      const isoString = w.date.toISOString()
-      const utcDate = new Date(isoString)
-      
-      // Add 10 hours for Australian Eastern Standard Time
-      utcDate.setHours(utcDate.getHours() + 10)
-      
+      const utcDate = new Date(w.date)
       const year = utcDate.getUTCFullYear()
       const month = String(utcDate.getUTCMonth() + 1).padStart(2, '0')
       const day = String(utcDate.getUTCDate()).padStart(2, '0')
-      const localDateStr = `${year}-${month}-${day}`
+      const dateStr = `${year}-${month}-${day}`
       
-      return localDateStr === date
+      return dateStr === date
     })
     
     console.log(`Found ${workouts.length} workouts for ${date}`)
@@ -96,16 +89,14 @@ export async function POST(request: NextRequest) {
     console.log('Request body:', body)
     const { exercise, weight, reps, date } = body
 
-    // Create workout date - store exactly as local time, no UTC conversion
+    // Create workout date - store in a way that preserves the local date
     let workoutDate: Date
     if (date) {
-      // Date is in local format (YYYY-MM-DD)
-      // Create a date in local time with current time of day
+      // Date is in local format (YYYY-MM-DD) 
+      // Store it as UTC midnight so date extraction is straightforward
       const [year, month, day] = date.split('-').map(Number)
-      const now = new Date()
-      
-      // Create date with local date and current local time
-      workoutDate = new Date(year, month - 1, day, now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds())
+      // Create date at UTC midnight for the given date
+      workoutDate = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0))
     } else {
       // Fallback to current timestamp if no date provided
       workoutDate = new Date()
