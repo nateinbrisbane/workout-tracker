@@ -9,6 +9,8 @@ export async function GET(request: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    
+    console.log('GET /api/workouts - User ID:', session.user.id)
 
     const { searchParams } = new URL(request.url)
     const date = searchParams.get('date')
@@ -27,7 +29,7 @@ export async function GET(request: NextRequest) {
       },
     })
     
-    console.log(`Date filtering for: ${date}, found ${allWorkouts.length} total workouts`)
+    console.log(`User ${session.user.id}: Date filtering for: ${date}, found ${allWorkouts.length} total workouts for this user`)
     
     // Filter workouts by comparing the date portion of the ISO string
     // This works because dates stored as "2025-08-27 05:54:09" become "2025-08-26T19:54:09.000Z" in ISO
@@ -88,28 +90,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    console.log('POST /api/workouts called')
+    console.log('POST /api/workouts - User ID:', session.user.id)
     
     const body = await request.json()
     console.log('Request body:', body)
     const { exercise, weight, reps, date } = body
 
-    // Create workout date - store exactly as local time, no UTC conversion
+    // Create workout date - adjust for Australian timezone
     let workoutDate: Date
     if (date) {
       // Date is in local format (YYYY-MM-DD)
-      // Create a date in local time with current time of day
+      // We need to create a date that when stored in UTC, will appear as the correct local date
+      // For Australia (+10), we subtract 10 hours
       const [year, month, day] = date.split('-').map(Number)
-      const now = new Date()
       
-      // Create date with local date and current local time
-      workoutDate = new Date(year, month - 1, day, now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds())
+      // Create date at noon local time, then subtract timezone offset
+      workoutDate = new Date(Date.UTC(year, month - 1, day, 12, 0, 0))
+      // Subtract 10 hours for Australian Eastern Standard Time
+      workoutDate.setHours(workoutDate.getHours() - 10)
     } else {
       // Fallback to current timestamp if no date provided
       workoutDate = new Date()
     }
 
-    console.log('Creating workout with:', { exercise, weight, reps, date: workoutDate.toISOString() })
+    console.log('Creating workout with:', { exercise, weight, reps, date: workoutDate.toISOString(), userId: session.user.id })
     
     const workout = await prisma.workout.create({
       data: {
