@@ -1,11 +1,21 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
 
 export async function GET() {
   try {
-    // Get all workouts and return them
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    
+    // Get all workouts for the current user
     // Let the client handle grouping by local date
     const workouts = await prisma.workout.findMany({
+      where: {
+        userId: session.user.id
+      },
       orderBy: {
         date: 'desc',
       },

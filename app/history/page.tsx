@@ -41,8 +41,10 @@ export default function History() {
         
         // Group workouts by LOCAL date on the client side
         const workoutsByDate = rawWorkouts.reduce((acc: any, workout: any) => {
-          // Get local date from the workout timestamp
+          // Get local date from the workout timestamp with timezone adjustment
           const workoutDate = new Date(workout.date)
+          // Add 10 hours for Australian Eastern Standard Time
+          workoutDate.setHours(workoutDate.getHours() + 10)
           const localDateKey = getLocalDateString(workoutDate)
           
           if (!acc[localDateKey]) {
