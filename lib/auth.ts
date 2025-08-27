@@ -17,11 +17,19 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     signIn: async ({ user, account, profile }) => {
+      console.log('Sign-in attempt for email:', user.email)
+      
       // Check if user is authorized
-      if (!isAuthorizedUser(user.email)) {
-        // Redirect to unauthorized page with error message
-        return '/unauthorized?error=not_authorized'
+      const isAuthorized = isAuthorizedUser(user.email)
+      console.log('Is authorized:', isAuthorized)
+      
+      if (!isAuthorized) {
+        console.log('User not authorized:', user.email)
+        // Return false to prevent sign-in
+        return false
       }
+      
+      console.log('User authorized, allowing sign-in')
       return true
     },
     session: async ({ session, token }) => {
