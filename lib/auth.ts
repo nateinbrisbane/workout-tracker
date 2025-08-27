@@ -2,6 +2,7 @@ import { NextAuthOptions } from 'next-auth'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import GoogleProvider from 'next-auth/providers/google'
 import { prisma } from '@/lib/prisma'
+import { isAuthorizedUser } from '@/lib/authorized-users'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as any,
@@ -15,6 +16,14 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
   },
   callbacks: {
+    signIn: async ({ user, account, profile }) => {
+      // Check if user is authorized
+      if (!isAuthorizedUser(user.email)) {
+        // Redirect to unauthorized page with error message
+        return '/unauthorized?error=not_authorized'
+      }
+      return true
+    },
     session: async ({ session, token }) => {
       if (session?.user) {
         session.user.id = token.sub!
