@@ -14,16 +14,24 @@ const createWorkoutSchema = (isBodyWeight: boolean, category: string) => {
   if (category === 'cardio') {
     return z.object({
       exercise: z.string().min(1, 'Exercise is required'),
-      weight: z.number().min(0, 'Time must be 0 or greater'), // Time for cardio
-      reps: z.number().min(0, 'Distance must be 0 or greater'), // Distance for cardio
+      weight: z.number().min(0, 'Time must be 0 or greater').or(z.nan()), // Time for cardio
+      reps: z.number().min(0, 'Distance must be 0 or greater').or(z.nan()), // Distance for cardio
     })
   }
   
+  if (isBodyWeight) {
+    // For bodyweight exercises, weight is truly optional
+    return z.object({
+      exercise: z.string().min(1, 'Exercise is required'),
+      weight: z.number().min(0).optional().or(z.nan()),
+      reps: z.number().min(1, 'Reps must be at least 1'),
+    })
+  }
+  
+  // For weighted exercises, weight is required
   return z.object({
     exercise: z.string().min(1, 'Exercise is required'),
-    weight: isBodyWeight 
-      ? z.number().min(0, 'Weight can be 0 for bodyweight exercises')
-      : z.number().min(0.1, 'Weight must be greater than 0'),
+    weight: z.number().min(0.1, 'Weight must be greater than 0'),
     reps: z.number().min(1, 'Reps must be at least 1'),
   })
 }
@@ -43,7 +51,6 @@ export function WorkoutForm({ onWorkoutAdded, selectedDate }: WorkoutFormProps) 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [exerciseOptions, setExerciseOptions] = useState<{ value: string; label: string }[]>([])
   const [workoutTypes, setWorkoutTypes] = useState<any[]>([])
-  const [selectedType, setSelectedType] = useState<any>(null)
   const [loadingExercises, setLoadingExercises] = useState(true)
 
   useEffect(() => {
@@ -78,6 +85,14 @@ export function WorkoutForm({ onWorkoutAdded, selectedDate }: WorkoutFormProps) 
     }
   }
 
+  const [selectedExercise, setSelectedExercise] = useState('')
+  
+  // Get current workout type details
+  const currentType = workoutTypes.find(t => t.name === selectedExercise)
+  const isBodyWeight: boolean = currentType?.isBodyWeight || false
+  const category: string = currentType?.category || 'weight'
+  const unit: string = currentType?.unit || 'kg'
+  
   const {
     register,
     handleSubmit,
@@ -85,8 +100,9 @@ export function WorkoutForm({ onWorkoutAdded, selectedDate }: WorkoutFormProps) 
     formState: { errors },
     setValue,
     watch,
+    clearErrors,
   } = useForm<WorkoutFormData>({
-    resolver: zodResolver(createWorkoutSchema(false, 'weight')), // Default schema
+    resolver: zodResolver(createWorkoutSchema(isBodyWeight, category)),
     defaultValues: {
       exercise: '',
       weight: undefined,
@@ -94,19 +110,20 @@ export function WorkoutForm({ onWorkoutAdded, selectedDate }: WorkoutFormProps) 
     },
   })
 
-  const selectedExercise = watch('exercise')
-  
-  // Get current workout type details after form is initialized
-  const currentType = selectedType || workoutTypes.find(t => t.name === selectedExercise)
-  const isBodyWeight: boolean = currentType?.isBodyWeight || false
-  const category: string = currentType?.category || 'weight'
-  const unit: string = currentType?.unit || 'kg'
-  
-  // Update selected type when exercise changes
+  // Watch for exercise changes
   useEffect(() => {
-    const type = workoutTypes.find(t => t.name === selectedExercise)
-    setSelectedType(type)
-  }, [selectedExercise, workoutTypes])
+    const subscription = watch((value) => {
+      if (value.exercise !== selectedExercise) {
+        setSelectedExercise(value.exercise || '')
+        // Clear weight error when switching to bodyweight exercise
+        const type = workoutTypes.find(t => t.name === value.exercise)
+        if (type?.isBodyWeight) {
+          clearErrors('weight')
+        }
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [watch, workoutTypes, selectedExercise, clearErrors])
 
   const onSubmit = async (data: WorkoutFormData) => {
     console.log('Form submitted with data:', data)
@@ -115,16 +132,24 @@ export function WorkoutForm({ onWorkoutAdded, selectedDate }: WorkoutFormProps) 
       // Use selected date from props, or fall back to current LOCAL date
       const workoutDate = selectedDate || getLocalDateString()
       
-      console.log('Sending POST to /api/workouts with date:', workoutDate)
+      // Handle optional weight for bodyweight exercises
+      const weight = isBodyWeight && (isNaN(data.weight) || data.weight === undefined) 
+        ? 0 
+        : data.weight
+      
+      const submitData = {
+        ...data,
+        weight,
+        date: workoutDate,
+      }
+      
+      console.log('Sending POST to /api/workouts with data:', submitData)
       const response = await fetch('/api/workouts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...data,
-          date: workoutDate,
-        }),
+        body: JSON.stringify(submitData),
       })
 
       console.log('Response status:', response.status)
