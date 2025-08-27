@@ -65,13 +65,16 @@ export async function POST(request: NextRequest) {
     let workoutDate: Date
     if (date) {
       // Date is in local format (YYYY-MM-DD)
-      // Create a timestamp for the current moment on that local date
-      const [year, month, day] = date.split('-').map(Number)
-      workoutDate = new Date(year, month - 1, day)
+      // Use the current time but ensure we stay on the correct local date
+      workoutDate = new Date() // Start with current timestamp
       
-      // Set to current time while preserving the date
-      const now = new Date()
-      workoutDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds())
+      // Parse the target date
+      const [year, month, day] = date.split('-').map(Number)
+      
+      // Set the date components while keeping the current time
+      workoutDate.setFullYear(year)
+      workoutDate.setMonth(month - 1)
+      workoutDate.setDate(day)
     } else {
       // Fallback to current timestamp if no date provided
       workoutDate = new Date()
