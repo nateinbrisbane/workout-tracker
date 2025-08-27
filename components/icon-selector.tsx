@@ -10,26 +10,36 @@ interface IconSelectorProps {
 }
 
 const EXERCISE_ICONS = [
-  '💪', // General/Bicep
+  '💪', // Bicep/Arms
   '🏋️', // Weightlifting
-  '🚴', // Cardio/Cycling
+  '🦵', // Legs
+  '🦶', // Foot/Calves
+  '🚣', // Rowing
+  '🦅', // Bird/Fly motion
+  '🤸', // Core/Gymnastics
   '🏃', // Running
-  '🤸', // Gymnastics/Flexibility
-  '🥊', // Boxing
-  '⚽', // Sports
-  '🏀', // Basketball
-  '🏈', // Football
-  '🎾', // Tennis
-  '🏐', // Volleyball
-  '🏓', // Table Tennis
-  '⛹️', // Basketball player
+  '👟', // Shoes/Footwork
+  '🚴', // Cycling
   '🏊', // Swimming
+  '🧘', // Yoga
+  '🥊', // Boxing
+  '🏐', // Volleyball
+  '🏀', // Basketball
+  '⚽', // Soccer
+  '🎾', // Tennis
+  '🏈', // Football
+  '🤾', // Handball
   '🧗', // Climbing
   '🤺', // Fencing
   '🏌️', // Golf
+  '🎿', // Skiing
+  '🛹', // Skateboard
   '🎯', // Target/Focus
-  '⭐', // Star/Achievement
-  '🔥', // Intensity
+  '🔥', // Intensity/Burn
+  '⚡', // Power/Speed
+  '💯', // Full effort
+  '⭐', // Achievement
+  '🏆', // Competition
 ]
 
 export function IconSelector({ selectedIcon, onIconSelect, className = '' }: IconSelectorProps) {
