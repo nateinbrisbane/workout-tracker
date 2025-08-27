@@ -55,8 +55,10 @@ function WorkoutPage() {
   const fetchWorkouts = async (date?: string) => {
     try {
       const targetDate = date || selectedDate || getLocalDateString()
-      console.log('Fetching workouts for UTC date:', targetDate)
-      const response = await fetch(`/api/workouts?date=${targetDate}`)
+      console.log('Fetching workouts for date:', targetDate)
+      const response = await fetch(`/api/workouts?date=${targetDate}`, {
+        cache: 'no-store'
+      })
       console.log('Fetch response status:', response.status)
       if (response.ok) {
         const data = await response.json()
