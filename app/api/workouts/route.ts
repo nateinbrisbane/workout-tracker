@@ -96,18 +96,16 @@ export async function POST(request: NextRequest) {
     console.log('Request body:', body)
     const { exercise, weight, reps, date } = body
 
-    // Create workout date - adjust for Australian timezone
+    // Create workout date - store exactly as local time, no UTC conversion
     let workoutDate: Date
     if (date) {
       // Date is in local format (YYYY-MM-DD)
-      // We need to create a date that when stored in UTC, will appear as the correct local date
-      // For Australia (+10), we subtract 10 hours
+      // Create a date in local time with current time of day
       const [year, month, day] = date.split('-').map(Number)
+      const now = new Date()
       
-      // Create date at noon local time, then subtract timezone offset
-      workoutDate = new Date(Date.UTC(year, month - 1, day, 12, 0, 0))
-      // Subtract 10 hours for Australian Eastern Standard Time
-      workoutDate.setHours(workoutDate.getHours() - 10)
+      // Create date with local date and current local time
+      workoutDate = new Date(year, month - 1, day, now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds())
     } else {
       // Fallback to current timestamp if no date provided
       workoutDate = new Date()
