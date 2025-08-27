@@ -322,8 +322,8 @@ export default function Settings() {
                                     onChange={(e) => setEditingUnit(e.target.value)}
                                     className="w-full h-9 px-2 border rounded-md text-sm"
                                   >
-                                    <option value="kg">Kilograms</option>
-                                    <option value="lbs">Pounds</option>
+                                    <option value="kg">Kilograms (kg)</option>
+                                    <option value="lbs">Pounds (lbs)</option>
                                   </select>
                                 </div>
                                 
