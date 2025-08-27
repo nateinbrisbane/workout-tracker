@@ -46,6 +46,9 @@ function LoginContent() {
           <p className="text-gray-600">
             Track your workouts, achieve your goals
           </p>
+          <p className="text-xs text-gray-400 mt-2">
+            v1.0.1
+          </p>
         </div>
 
         {error && (
