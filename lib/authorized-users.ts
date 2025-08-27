@@ -7,7 +7,7 @@ export const AUTHORIZED_EMAILS = [
 
 // You can also use domain-based authorization
 // e.g., allow all users from a specific domain
-export const AUTHORIZED_DOMAINS = [
+export const AUTHORIZED_DOMAINS: string[] = [
   // 'yourcompany.com', // Uncomment and add your domain
 ]
 
