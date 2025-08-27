@@ -11,6 +11,9 @@ interface Workout {
   reps: number
   date: string
   icon?: string
+  category?: string
+  unit?: string
+  isBodyWeight?: boolean
 }
 
 interface WorkoutListProps {
@@ -58,7 +61,25 @@ export function WorkoutList({ workouts, onWorkoutDeleted }: WorkoutListProps) {
               </div>
               <div className="flex items-center gap-4 mt-2">
                 <span className="bg-blue-50 px-3 py-1 rounded text-blue-700 font-medium">
-                  {workout.weight}kg × {workout.reps} reps
+                  {(() => {
+                    const category = workout.category || 'weight'
+                    const unit = workout.unit || 'kg'
+                    const isBodyWeight = workout.isBodyWeight || false
+                    
+                    if (category === 'cardio') {
+                      // For cardio: show time and distance
+                      return `${workout.weight} min × ${workout.reps} km`
+                    } else if (isBodyWeight && workout.weight === 0) {
+                      // For bodyweight with no added weight
+                      return `Bodyweight × ${workout.reps} reps`
+                    } else if (isBodyWeight && workout.weight > 0) {
+                      // For bodyweight with added weight
+                      return `BW + ${workout.weight}${unit} × ${workout.reps} reps`
+                    } else {
+                      // For regular weight exercises
+                      return `${workout.weight}${unit} × ${workout.reps} reps`
+                    }
+                  })()}
                 </span>
                 <span className="text-sm text-gray-500">
                   {format(new Date(workout.date), 'HH:mm')}
