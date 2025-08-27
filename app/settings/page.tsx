@@ -14,6 +14,8 @@ interface WorkoutType {
   category: string
   isBodyWeight: boolean
   unit: string
+  isGlobal: boolean
+  userId: string | null
 }
 
 export default function Settings() {
@@ -174,6 +176,14 @@ export default function Settings() {
             <div>
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900">⚙️ Settings</h1>
               <p className="text-gray-500 mt-1">Manage your workout types</p>
+              <div className="flex gap-4 mt-2">
+                <span className="text-xs text-gray-500">
+                  <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded font-medium">🌍 Global</span> Available to all users
+                </span>
+                <span className="text-xs text-gray-500">
+                  <span className="px-1.5 py-0.5 bg-green-100 text-green-700 rounded font-medium">👤 Personal</span> Only for you
+                </span>
+              </div>
             </div>
             {!isAdding && (
               <Button
@@ -366,6 +376,15 @@ export default function Settings() {
                             <span className="font-medium text-gray-900 text-base">
                               {workoutType.icon} {workoutType.name}
                             </span>
+                            {workoutType.isGlobal ? (
+                              <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">
+                                🌍 Global
+                              </span>
+                            ) : (
+                              <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium">
+                                👤 Personal
+                              </span>
+                            )}
                             <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
                               {workoutType.category === 'cardio' ? '🏃 Cardio' : '💪 Weight'}
                             </span>
@@ -383,13 +402,14 @@ export default function Settings() {
                         </div>
                       )}
                     </div>
-                    {editingId !== workoutType.id && (
+                    {editingId !== workoutType.id && !workoutType.isGlobal && (
                       <div className="flex items-center gap-2 ml-3">
                         <Button
                           onClick={() => startEditing(workoutType)}
                           variant="outline"
                           size="sm"
                           className="h-9 w-9 p-0"
+                          title="Edit workout type"
                         >
                           <Edit2 className="h-4 w-4" />
                         </Button>
@@ -398,6 +418,7 @@ export default function Settings() {
                           variant="destructive"
                           size="sm"
                           className="h-9 w-9 p-0"
+                          title="Delete workout type"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
