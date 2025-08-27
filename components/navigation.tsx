@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Menu, X, LogOut, User } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
 import { Button } from './ui/button'
@@ -11,6 +11,25 @@ export function Navigation() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const { data: session } = useSession()
+  const [isAdmin, setIsAdmin] = useState(false)
+  
+  useEffect(() => {
+    // Check if user is admin
+    const checkAdminStatus = async () => {
+      if (session?.user) {
+        try {
+          const response = await fetch('/api/user/status')
+          if (response.ok) {
+            const data = await response.json()
+            setIsAdmin(data.role === 'admin')
+          }
+        } catch (error) {
+          console.error('Error checking admin status:', error)
+        }
+      }
+    }
+    checkAdminStatus()
+  }, [session])
   
   const isActive = (path: string) => {
     if (path === '/' && pathname === '/') return true
@@ -22,6 +41,7 @@ export function Navigation() {
     { href: '/', label: 'Today' },
     { href: '/history', label: 'History' },
     { href: '/settings', label: 'Settings' },
+    ...(isAdmin ? [{ href: '/admin', label: 'Admin' }] : [])
   ]
 
   return (

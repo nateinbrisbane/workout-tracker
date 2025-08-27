@@ -40,7 +40,8 @@
       "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx prisma/check-user-workouts.ts)",
       "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx fix-recent-dates.ts)",
       "Bash(del fix-recent-dates.ts)",
-      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx fix-workout-dates.ts)"
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx fix-workout-dates.ts)",
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_rSeg3hoiTdE4@ep-weathered-hat-a7mc4fdu-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require\" npx tsx setup-admin.ts)"
     ],
     "deny": [],
     "ask": []

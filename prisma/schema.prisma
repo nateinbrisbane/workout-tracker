@@ -41,6 +41,11 @@ model User {
   emailVerified DateTime?
   name          String?
   image         String?
+  role          String   @default("user") // "user", "admin"
+  status        String   @default("pending") // "pending", "approved", "rejected"
+  registeredAt  DateTime @default(now())
+  approvedAt    DateTime?
+  approvedBy    String?  // Admin who approved
   accounts      Account[]
   sessions      Session[]
   workouts      Workout[]

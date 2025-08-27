@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import Link from 'next/link'
 
 function LoginContent() {
   const [isLoading, setIsLoading] = useState(false)
@@ -129,6 +130,18 @@ function LoginContent() {
         <p className="text-center text-xs text-gray-500 mt-8">
           By signing in, you agree to our Terms of Service and Privacy Policy
         </p>
+        
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-600">
+            Don't have an account?{' '}
+            <Link
+              href="/register"
+              className="text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Register here
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )
