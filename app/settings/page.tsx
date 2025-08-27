@@ -79,6 +79,9 @@ export default function Settings() {
         console.log('Success! Refreshing list...')
         setNewTypeName('')
         setNewTypeIcon('💪')
+        setNewTypeCategory('weight')
+        setNewTypeIsBodyWeight(false)
+        setNewTypeUnit('kg')
         setIsAdding(false)
         fetchWorkoutTypes()
       } else {
@@ -283,34 +286,79 @@ export default function Settings() {
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
                       {editingId === workoutType.id ? (
-                        <div className="flex items-center gap-3">
-                          <IconSelector
-                            selectedIcon={editingIcon}
-                            onIconSelect={setEditingIcon}
-                          />
-                          <Input
-                            value={editingName}
-                            onChange={(e) => setEditingName(e.target.value)}
-                            className="flex-1 h-10 text-base"
-                            onKeyPress={(e) => e.key === 'Enter' && updateWorkoutType(workoutType.id)}
-                            autoFocus
-                          />
-                          <Button
-                            onClick={() => updateWorkoutType(workoutType.id)}
-                            disabled={!editingName.trim()}
-                            size="sm"
-                            className="h-10 px-3"
-                          >
-                            <Save className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            onClick={cancelEditing}
-                            variant="outline"
-                            size="sm"
-                            className="h-10 px-3"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
+                        <div className="w-full space-y-3">
+                          <div className="flex items-center gap-3">
+                            <IconSelector
+                              selectedIcon={editingIcon}
+                              onIconSelect={setEditingIcon}
+                            />
+                            <Input
+                              value={editingName}
+                              onChange={(e) => setEditingName(e.target.value)}
+                              className="flex-1 h-10 text-base"
+                              autoFocus
+                            />
+                          </div>
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Category</label>
+                              <select
+                                value={editingCategory}
+                                onChange={(e) => setEditingCategory(e.target.value)}
+                                className="w-full h-9 px-2 border rounded-md text-sm"
+                              >
+                                <option value="weight">💪 Weight</option>
+                                <option value="cardio">🏃 Cardio</option>
+                              </select>
+                            </div>
+                            
+                            {editingCategory === 'weight' && (
+                              <>
+                                <div>
+                                  <label className="block text-xs font-medium text-gray-600 mb-1">Unit</label>
+                                  <select
+                                    value={editingUnit}
+                                    onChange={(e) => setEditingUnit(e.target.value)}
+                                    className="w-full h-9 px-2 border rounded-md text-sm"
+                                  >
+                                    <option value="kg">Kilograms</option>
+                                    <option value="lbs">Pounds</option>
+                                  </select>
+                                </div>
+                                
+                                <div className="flex items-center">
+                                  <label className="flex items-center gap-2 cursor-pointer text-sm">
+                                    <input
+                                      type="checkbox"
+                                      checked={editingIsBodyWeight}
+                                      onChange={(e) => setEditingIsBodyWeight(e.target.checked)}
+                                      className="w-4 h-4 text-blue-600 border-gray-300 rounded"
+                                    />
+                                    <span>Bodyweight</span>
+                                  </label>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                          
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              onClick={cancelEditing}
+                              variant="outline"
+                              size="sm"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              onClick={() => updateWorkoutType(workoutType.id)}
+                              disabled={!editingName.trim()}
+                              size="sm"
+                            >
+                              <Save className="h-4 w-4 mr-1" />
+                              Save
+                            </Button>
+                          </div>
                         </div>
                       ) : (
                         <div className="flex items-center justify-between w-full">
