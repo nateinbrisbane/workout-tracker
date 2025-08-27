@@ -33,11 +33,24 @@ export default function Settings() {
   const [editingCategory, setEditingCategory] = useState('weight')
   const [editingIsBodyWeight, setEditingIsBodyWeight] = useState(false)
   const [editingUnit, setEditingUnit] = useState('kg')
-
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
     fetchWorkoutTypes()
+    checkAdminStatus()
   }, [])
+
+  const checkAdminStatus = async () => {
+    try {
+      const response = await fetch('/api/user/status')
+      if (response.ok) {
+        const data = await response.json()
+        setIsAdmin(data.role === 'admin')
+      }
+    } catch (error) {
+      console.error('Error checking admin status:', error)
+    }
+  }
 
   const fetchWorkoutTypes = async () => {
     try {
@@ -402,14 +415,14 @@ export default function Settings() {
                         </div>
                       )}
                     </div>
-                    {editingId !== workoutType.id && !workoutType.isGlobal && (
+                    {editingId !== workoutType.id && (!workoutType.isGlobal || isAdmin) && (
                       <div className="flex items-center gap-2 ml-3">
                         <Button
                           onClick={() => startEditing(workoutType)}
                           variant="outline"
                           size="sm"
                           className="h-9 w-9 p-0"
-                          title="Edit workout type"
+                          title={workoutType.isGlobal ? "Edit global workout type (Admin)" : "Edit workout type"}
                         >
                           <Edit2 className="h-4 w-4" />
                         </Button>
@@ -418,7 +431,7 @@ export default function Settings() {
                           variant="destructive"
                           size="sm"
                           className="h-9 w-9 p-0"
-                          title="Delete workout type"
+                          title={workoutType.isGlobal ? "Delete global workout type (Admin)" : "Delete workout type"}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

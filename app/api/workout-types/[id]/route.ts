@@ -22,8 +22,18 @@ export async function PUT(
       return NextResponse.json({ error: 'Workout type not found' }, { status: 404 })
     }
 
-    // Only allow editing user's own workout types (not global ones)
-    if (existingType.userId !== session.user.id) {
+    // Check if user is admin (for global types) or owns the type
+    const currentUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { role: true }
+    })
+
+    const isAdmin = currentUser?.role === 'admin'
+
+    // Allow editing if:
+    // 1. User owns the workout type, OR
+    // 2. It's a global type and user is admin
+    if (existingType.userId !== session.user.id && !(existingType.isGlobal && isAdmin)) {
       return NextResponse.json({ error: 'Cannot edit this workout type' }, { status: 403 })
     }
 
@@ -89,8 +99,18 @@ export async function DELETE(
       return NextResponse.json({ error: 'Workout type not found' }, { status: 404 })
     }
 
-    // Only allow deleting user's own workout types (not global ones)
-    if (existingType.userId !== session.user.id) {
+    // Check if user is admin (for global types) or owns the type
+    const currentUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { role: true }
+    })
+
+    const isAdmin = currentUser?.role === 'admin'
+
+    // Allow deleting if:
+    // 1. User owns the workout type, OR
+    // 2. It's a global type and user is admin
+    if (existingType.userId !== session.user.id && !(existingType.isGlobal && isAdmin)) {
       return NextResponse.json({ error: 'Cannot delete this workout type' }, { status: 403 })
     }
 
