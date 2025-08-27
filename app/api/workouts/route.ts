@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getUTCDayBounds } from '@/lib/date-utils'
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,23 +10,24 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 })
     }
 
-    // Get UTC boundaries for the LOCAL date
-    // This handles timezone conversion properly
-    const { start: startOfTargetDay, end: endOfTargetDay } = getUTCDayBounds(date)
+    // Simple date filtering - no UTC conversion needed
+    // Create start and end of day in local time
+    const [year, month, day] = date.split('-').map(Number)
+    const startOfDay = new Date(year, month - 1, day, 0, 0, 0, 0)
+    const endOfDay = new Date(year, month - 1, day, 23, 59, 59, 999)
 
     console.log('Date filtering:', {
       input: date,
-      localDate: date,
-      start: startOfTargetDay.toISOString(),
-      end: endOfTargetDay.toISOString()
+      startOfDay: startOfDay.toString(),
+      endOfDay: endOfDay.toString()
     })
 
-    // First get all workouts for the date
+    // Get all workouts for the date
     const workouts = await prisma.workout.findMany({
       where: {
         date: {
-          gte: startOfTargetDay,
-          lte: endOfTargetDay,
+          gte: startOfDay,
+          lte: endOfDay,
         },
       },
       orderBy: {
@@ -61,20 +61,16 @@ export async function POST(request: NextRequest) {
     console.log('Request body:', body)
     const { exercise, weight, reps, date } = body
 
-    // Create a proper date for the workout
+    // Create workout date - store exactly as local time, no UTC conversion
     let workoutDate: Date
     if (date) {
       // Date is in local format (YYYY-MM-DD)
-      // Use the current time but ensure we stay on the correct local date
-      workoutDate = new Date() // Start with current timestamp
-      
-      // Parse the target date
+      // Create a date in local time with current time of day
       const [year, month, day] = date.split('-').map(Number)
+      const now = new Date()
       
-      // Set the date components while keeping the current time
-      workoutDate.setFullYear(year)
-      workoutDate.setMonth(month - 1)
-      workoutDate.setDate(day)
+      // Create date with local date and current local time
+      workoutDate = new Date(year, month - 1, day, now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds())
     } else {
       // Fallback to current timestamp if no date provided
       workoutDate = new Date()
